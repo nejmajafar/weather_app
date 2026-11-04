@@ -1,114 +1,164 @@
 
 {% extends "base.html" %}
 
-{% block title %}Väderprognos - Weather Dashboard{% endblock %}
+{% block title %}Väder i {{ selected_city }} | Weather Dashboard{% endblock %}
 
 {% block content %}
 
-    <!-- Länk tillbaka till startsidan -->
-    <p>
-        <a href="{{ url_for('home') }}">← Tillbaka till startsidan</a>
-    </p>
+<a href="{{ url_for('home') }}" class="back-link">
+    ← Tillbaka till startsidan
+</a>
 
-    <!-- Visar felmeddelande om något går fel -->
-    {% if error %}
-        <p class="error">{{ error }}</p>
-    {% endif %}
+{% if error %}
+    <p class="error">{{ error }}</p>
+{% endif %}
 
-    <!-- Visar aktuellt väder för vald stad -->
-    {% if current_weather %}
-        <section class="forecast-section">
-            <p class="subtitle">AKTUELLT VÄDER</p>
-            <h2>Just nu i {{ selected_city }}</h2>
+{% if current_weather %}
+    <section class="weather-hero">
+        <div class="hero-content">
 
-            <div class="forecast-grid">
-                <!-- Kort med nuvarande temperatur -->
-                <article class="card forecast-card">
-                    <p class="date">Temperatur</p>
-                    <p class="temperature">
+            <div class="hero-top">
+                <span class="hero-eyebrow">CURRENT WEATHER</span>
+
+                <span class="hero-status">
+                    <span class="status-dot"></span>
+                    LATEST FORECAST
+                </span>
+            </div>
+
+            <div class="hero-main">
+                <div>
+                    <p class="hero-location">SVERIGE · JUST NU</p>
+
+                    <h2 class="hero-city">{{ selected_city }}</h2>
+
+                    <p class="hero-temperature">
                         {{ current_weather.temperature_2m | format_temp }}
                     </p>
-                </article>
 
-                <!-- Kort med nuvarande vindhastighet -->
-                <article class="card forecast-card">
-                    <p class="date">Vindhastighet</p>
-                    <p class="temperature">
-                        {{ current_weather.wind_speed_10m }}
+                    <p class="hero-description">
+                        Aktuell temperatur
                     </p>
-                    <p class="temperature-label">km/h</p>
-                </article>
-            </div>
-        </section>
-    {% endif %}
+                </div>
 
-    <!-- Visar tredagarsprognosen om väderdata finns -->
-    {% if forecast %}
-        <section class="forecast-section">
-            <div class="section-heading">
-                <div>
-                    <p class="subtitle">3-DAGARSPROGNOS</p>
-                    <h2>Väder i {{ selected_city }}</h2>
+                <div class="hero-weather-icon" aria-hidden="true">
+                    {{ get_weather_icon(current_weather.get("weather_code")) }}
                 </div>
             </div>
 
-            <!-- Skapar ett väderkort för varje prognosdag -->
-            <div class="forecast-grid">
-                {% for day in forecast %}
-                    <article class="card forecast-card">
-                        <p class="date">{{ day.date }}</p>
+            <div class="hero-bottom">
+                <div class="hero-stat">
+                    <span>VINDHASTIGHET</span>
+                    <strong>
+                        {{ current_weather.wind_speed_10m }} km/h
+                    </strong>
+                </div>
 
-                        <p class="temperature">
-                            {{ day.max_temp | format_temp }}
+                <div class="hero-stat">
+                    <span>PLATS</span>
+                    <strong>{{ selected_city }}, Sverige</strong>
+                </div>
+
+                <div class="hero-stat">
+                    <span>DATAKÄLLA</span>
+                    <strong>Open-Meteo</strong>
+                </div>
+            </div>
+
+        </div>
+    </section>
+{% endif %}
+
+{% if forecast %}
+    <section class="forecast-section">
+
+        <div class="section-heading">
+            <div>
+                <p class="subtitle">THE NEXT THREE DAYS</p>
+                <h2>Kommande väder</h2>
+            </div>
+
+            <span class="section-tag">3-DAGARSPROGNOS</span>
+        </div>
+
+        <div class="forecast-grid">
+            {% for day in forecast %}
+                <article class="card forecast-card">
+
+                    <div class="forecast-card-top">
+                        <span class="date">
+                            {{ day.display_date }}
+                        </span>
+
+                        <span class="forecast-icon" aria-hidden="true">
+                            {{ day.weather_icon }}
+                        </span>
+                    </div>
+
+                    <p class="temperature">
+                        {{ day.max_temp | format_temp }}
+                    </p>
+
+                    <p class="temperature-label">
+                        Högsta temperatur
+                    </p>
+
+                    <div class="weather-details">
+                        <p>
+                            <span>Lägsta temperatur</span>
+                            <strong>
+                                {{ day.min_temp | format_temp }}
+                            </strong>
                         </p>
 
-                        <p class="temperature-label">Max temperatur</p>
+                        <p>
+                            <span>Nederbörd</span>
+                            <strong>
+                                {{ day.precipitation }} mm
+                            </strong>
+                        </p>
+                    </div>
 
-                        <!-- Visar min temperatur och nederbörd -->
-                        <div class="weather-details">
-                            <p>
-                                Min temperatur
-                                <strong>{{ day.min_temp | format_temp }}</strong>
-                            </p>
-                            <p>
-                                Nederbörd
-                                <strong>{{ day.precipitation }} mm</strong>
-                            </p>
-                        </div>
-                    </article>
-                {% endfor %}
+                </article>
+            {% endfor %}
+        </div>
+
+    </section>
+
+    <section class="card table-section">
+
+        <div class="section-heading">
+            <div>
+                <p class="subtitle">WEATHER DATA</p>
+                <h2>Detaljerad prognos</h2>
             </div>
-        </section>
+        </div>
 
-        <!-- Visar prognosen i en detaljerad tabell -->
-        <section class="card table-section">
-            <h2>Detaljerad prognos</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Max °C</th>
+                        <th>Min °C</th>
+                        <th>Nederbörd</th>
+                    </tr>
+                </thead>
 
-            <div class="table-wrapper">
-                <table>
-                    <thead>
+                <tbody>
+                    {% for day in forecast %}
                         <tr>
-                            <th>Datum</th>
-                            <th>Max °C</th>
-                            <th>Min °C</th>
-                            <th>Nederbörd (mm)</th>
+                            <td>{{ day.display_date }}</td>
+                            <td>{{ day.max_temp | format_temp }}</td>
+                            <td>{{ day.min_temp | format_temp }}</td>
+                            <td>{{ day.precipitation }} mm</td>
                         </tr>
-                    </thead>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-                    <tbody>
-                        <!-- Skapar en tabellrad för varje dag -->
-                        {% for day in forecast %}
-                            <tr>
-                                <td>{{ day.date }}</td>
-                                <td>{{ day.max_temp | format_temp }}</td>
-                                <td>{{ day.min_temp | format_temp }}</td>
-                                <td>{{ day.precipitation }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    {% endif %}
+    </section>
+{% endif %}
 
 {% endblock %}

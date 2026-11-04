@@ -5,26 +5,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Gemensam titel för alla sidor -->
+    <meta name="theme-color" content="#080e1d">
+    <meta name="description" content="Modern väderprognos för svenska städer.">
+
     <title>{% block title %}Weather Dashboard{% endblock %}</title>
 
-    <!-- Hämtar designen från CSS-filen -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
-<body>
-    <main class="dashboard">
+<body class="premium-dark">
 
-        <!-- Gemensam rubrik -->
-        <header class="header">
-            <p class="subtitle">WEATHER OVERVIEW</p>
-            <h1>Weather Dashboard</h1>
-            <p class="description">Väderprognos för svenska städer</p>
-        </header>
+    <div class="site-wrapper">
 
-        <!-- Här visas innehållet från andra HTML-mallar -->
-        {% block content %}{% endblock %}
+        <nav class="navbar" aria-label="Huvudnavigation">
+            <a href="{{ url_for('home') }}" class="brand">
+                <span class="brand-icon" aria-hidden="true">☁</span>
+                <span>WEATHER<span class="brand-accent">.</span></span>
+            </a>
 
-    </main>
+            <div class="nav-links">
+                <a href="{{ url_for('home') }}" class="nav-link">
+                    Overview
+                </a>
+                <a href="{{ url_for('forecast', city='Stockholm') }}" class="nav-link">
+                    Forecast
+                </a>
+            </div>
+
+            <span class="nav-badge">LIVE WEATHER</span>
+        </nav>
+
+        <main class="dashboard">
+
+            <header class="header">
+                <p class="subtitle">YOUR DAILY WEATHER REPORT</p>
+                <h1>Weather <span class="gradient-text">Dashboard.</span></h1>
+                <p class="description">
+                    Väderprognoser för svenska städer.
+                    En enkel överblick över vädret idag och de kommande dagarna.
+                </p>
+            </header>
+
+            {% block content %}{% endblock %}
+
+        </main>
+
+        <footer class="site-footer">
+            <span>© Weather Dashboard</span>
+
+            <span>
+                Weather data by
+                <a href="https://open-meteo.com/"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    Open-Meteo
+                </a>
+                · CC BY 4.0
+            </span>
+        </footer>
+
+    </div>
+
 </body>
 </html>
+

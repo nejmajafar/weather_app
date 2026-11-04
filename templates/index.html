@@ -1,29 +1,85 @@
 
 {% extends "base.html" %}
 
-{% block title %}Weather Dashboard{% endblock %}
+{% block title %}Weather Dashboard | Startsida{% endblock %}
 
 {% block content %}
 
-    <!-- Formulär för att välja stad -->
-    <section class="card">
-        <form action="{{ url_for('forecast') }}" method="GET" class="city-form">
+<section class="welcome-hero">
+    <div class="welcome-content">
 
-            <label for="city">Välj stad</label>
+        <div class="welcome-label">
+            <span class="status-dot"></span>
+            YOUR WEATHER, SIMPLIFIED
+        </div>
 
-            <!-- Visar alla tillgängliga städer -->
-            <select name="city" id="city" required>
-                {% for city in cities %}
-                    <option value="{{ city }}">
-                        {{ city }}
-                    </option>
-                {% endfor %}
-            </select>
+        <h2 class="welcome-title">
+            Every forecast.<br>
+            <span class="gradient-text">One beautiful view.</span>
+        </h2>
 
-            <!-- Skickar vald stad till prognossidan -->
-            <button type="submit">Visa väder</button>
+        <p class="welcome-description">
+            Upptäck vädret i Sveriges städer.
+            Se aktuell temperatur, vindhastighet och prognosen
+            för de kommande tre dagarna.
+        </p>
 
-        </form>
-    </section>
+        <div class="city-selector-card">
+            <p class="selector-heading">EXPLORE THE WEATHER</p>
+            <h3>Vart vill du kolla vädret?</h3>
+
+            <form action="{{ url_for('forecast') }}"
+                  method="GET"
+                  class="city-form">
+
+                <label for="city">Välj stad</label>
+
+                <select name="city" id="city" required>
+                    {% for city in cities %}
+                        <option value="{{ city }}">
+                            {{ city }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">
+                    Visa väderprognos →
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    <div class="welcome-visual" aria-hidden="true">
+        <div class="weather-orb"></div>
+        <div class="orb-glow"></div>
+    </div>
+</section>
+
+<section class="features-section">
+    <div class="feature">
+        <span class="feature-icon">◉</span>
+        <div>
+            <h3>Aktuellt väder</h3>
+            <p>Temperatur och vindhastighet just nu.</p>
+        </div>
+    </div>
+
+    <div class="feature">
+        <span class="feature-icon">▦</span>
+        <div>
+            <h3>3-dagarsprognos</h3>
+            <p>Max, min och nederbörd för varje dag.</p>
+        </div>
+    </div>
+
+    <div class="feature">
+        <span class="feature-icon">⌁</span>
+        <div>
+            <h3>Väderdata</h3>
+            <p>Prognoser hämtade från Open-Meteo.</p>
+        </div>
+    </div>
+</section>
 
 {% endblock %}

@@ -1,4 +1,3 @@
-
 import pytest
 
 from cities import is_valid_city

@@ -23,24 +23,26 @@ def get_weather(city):
     params = {
         "latitude": latitude,
         "longitude": longitude,
-        "current": "temperature_2m,wind_speed_10m",
-        "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum",
+        "current": "temperature_2m,wind_speed_10m,weather_code",
+        "daily": (
+            "temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code"
+        ),
         "timezone": "auto",
         "forecast_days": 3,
     }
 
-    # Skickar en GET-förfrågan till väder-API:et
     try:
+        # Skickar API-anropet och väntar högst 10 sekunder
         response = requests.get(API_URL, params=params, timeout=10)
 
-        # Kontrollerar om API-anropet lyckades
+        # Kontrollerar om servern har returnerat ett HTTP-fel
         response.raise_for_status()
 
         # Omvandlar JSON-svaret till Python-data
         return response.json()
 
-    # Hanterar fel vid anslutning eller API-anrop
     except requests.RequestException as error:
+        # Hanterar exempelvis timeout och anslutningsfel
         raise WeatherAPIError(
             "Kunde inte hämta väderdata. Försök igen senare."
         ) from error
