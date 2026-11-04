@@ -1,4 +1,5 @@
-# Städer och koordinater som används för väderprognoser
+# Lagrar städer och deras geografiska koordinater
+# Varje stad har en latitud och longitud
 CITIES = {
     "Stockholm": (59.33, 18.07),
     "Göteborg": (57.71, 11.97),
@@ -9,5 +10,6 @@ CITIES = {
 
 
 def is_valid_city(city):
-    # Kontrollerar om staden finns i listan
+    # Kontrollerar om den valda staden finns i CITIES
+    # Returnerar True om staden finns, annars False
     return city in CITIES

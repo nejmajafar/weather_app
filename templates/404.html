@@ -1,0 +1,19 @@
+
+{% extends "base.html" %}
+
+{% block title %}Sidan hittades inte{% endblock %}
+
+{% block content %}
+
+    <!-- Visar ett felmeddelande om sidan inte finns -->
+    <section class="card">
+        <p class="subtitle">ERROR 404</p>
+        <h2>Sidan kunde inte hittas</h2>
+
+        <p>Adressen du försöker besöka finns inte.</p>
+
+        <!-- Länk tillbaka till startsidan -->
+        <a href="{{ url_for('home') }}">Tillbaka till startsidan</a>
+    </section>
+
+{% endblock %}

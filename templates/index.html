@@ -1,0 +1,29 @@
+
+{% extends "base.html" %}
+
+{% block title %}Weather Dashboard{% endblock %}
+
+{% block content %}
+
+    <!-- Formulär för att välja stad -->
+    <section class="card">
+        <form action="{{ url_for('forecast') }}" method="GET" class="city-form">
+
+            <label for="city">Välj stad</label>
+
+            <!-- Visar alla tillgängliga städer -->
+            <select name="city" id="city" required>
+                {% for city in cities %}
+                    <option value="{{ city }}">
+                        {{ city }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- Skickar vald stad till prognossidan -->
+            <button type="submit">Visa väder</button>
+
+        </form>
+    </section>
+
+{% endblock %}
