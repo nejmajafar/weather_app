@@ -8,11 +8,12 @@ Projektet är en individuell examinationsuppgift i Programmering 2.
 
 - Välj mellan Stockholm, Göteborg, Malmö, Umeå och Kiruna.
 - Visa aktuell temperatur och vindhastighet.
-- Visa tredagarsprognos med max- och mintemperatur samt nederbörd.
-- Visa prognosen i både väderkort och tabell.
-- Hantera ogiltiga städer och API-fel.
+- Visa en tredagarsprognos med högsta och lägsta temperatur samt nederbörd.
+- Visa väderinformation med väderikoner, prognoskort och en detaljerad tabell.
+- Hantera ogiltiga städer och fel vid API-anrop.
 - Visa en egen 404-sida.
 - Formatera temperaturer med ett eget Jinja2-filter.
+- Visa datum på svenska.
 
 ## Tekniker
 
@@ -25,7 +26,17 @@ Projektet är en individuell examinationsuppgift i Programmering 2.
 
 ## Installation
 
-Klona projektet från GitHub och öppna projektmappen.
+Klona projektet från GitHub:
+
+```bash
+git clone https://github.com/nejmajafar/weather_app.git
+```
+
+Öppna projektmappen:
+
+```bash
+cd weather_app
+```
 
 Skapa en virtuell miljö:
 
@@ -48,47 +59,77 @@ pip install -r requirements-dev.txt
 
 ## Starta applikationen
 
+Starta Flask-applikationen:
+
 ```bash
 python app.py
 ```
 
-Öppna sedan:
+Öppna sedan följande adress i webbläsaren:
 
 http://127.0.0.1:5001
 
+Välj en stad på startsidan och klicka på knappen för att visa väderprognosen.
+
 ## Kör testerna
+
+Projektet använder Pytest för att testa funktioner, API-anrop och Flask-routes.
+
+Kör testerna:
 
 ```bash
 python -m pytest -v
 ```
 
-Kontrollera kodkvalitet och formatering:
+Kontrollera kodkvaliteten:
 
 ```bash
 ruff check .
+```
+
+Kontrollera formateringen:
+
+```bash
 ruff format --check .
 ```
 
+Tester som använder API-data körs med mockning för att inte vara beroende av internetuppkoppling.
+
 ## Frågor och svar
 
-### Varför använder vi mock i API-tester?
+### 1. Varför mockar du anropen mot API:et i dina tester, och vad skulle hända om du inte gjorde det?
 
-Mock används för att simulera API-svar utan att göra riktiga nätverksanrop. Det gör testerna snabbare och mer pålitliga. Vi kan även simulera fel som timeout och HTTP-fel.
+Jag använder mockning för att simulera svar från Open-Meteo utan att göra riktiga API-anrop. Det gör testerna snabbare och mer pålitliga eftersom de inte är beroende av internet eller att API:et fungerar. Utan mockning skulle testerna kunna misslyckas på grund av nätverksproblem även om min egen kod fungerar. I `tests/test_weather_api.py` testar jag både lyckade anrop och fel som timeout och HTTP-fel.
 
-### Varför använder vi timeout och raise_for_status()?
+### 2. Vad gör timeout och raise_for_status(), och varför behövs de?
 
-Timeout förhindrar att applikationen väntar hur länge som helst på ett API-svar. `raise_for_status()` gör att HTTP-fel upptäcks och kan hanteras med ett tydligt felmeddelande.
+I `weather_api.py` använder jag `timeout=10` för att begränsa hur länge programmet väntar på ett svar från API:et. `raise_for_status()` kontrollerar HTTP-statuskoden och skapar ett undantag om servern returnerar ett fel, exempelvis 404 eller 500. Felen fångas med `requests.RequestException` och omvandlas till mitt eget fel `WeatherAPIError`. På så sätt kan applikationen visa ett tydligt felmeddelande i stället för att krascha.
 
-### Varför använder vi mallarv i Jinja2?
+### 3. Hur fungerar mallarv i Jinja2? Förklara med exempel från dina egna mallar.
 
-Mallarv gör att flera HTML-sidor kan dela samma grundstruktur genom `base.html`. Det minskar upprepning och gör koden enklare att underhålla.
+Mallarv innebär att flera HTML-sidor kan använda samma grundstruktur utan att koden behöver upprepas. I mitt projekt innehåller `base.html` gemensamma delar som navigation, sidhuvud och sidfot. Mallarna `index.html` och `forecast.html` använder `{% extends "base.html" %}` och lägger sitt eget innehåll i blocket `content`. Det gör det enklare att ändra designen eftersom gemensamma delar bara behöver uppdateras på ett ställe.
 
-### Varför använder vi en fixture i pytest?
+### 4. Vad är en fixture, och vilken använder du?
 
-En fixture skapar gemensamma resurser som flera tester kan använda. I projektet använder vi en Flask-testklient för att testa olika routes utan att starta en riktig webbserver.
+En fixture i Pytest används för att förbereda resurser som behövs i flera tester. I `tests/test_app.py` använder jag `@pytest.fixture` för att skapa en Flask-testklient. Med testklienten kan jag skicka förfrågningar till mina routes och kontrollera statuskoder och sidinnehåll utan att starta en riktig webbserver. Det gör testerna enklare att skriva och återanvända.
+
+## Projektstruktur
+
+- `app.py` – Flask-applikationen med routes och felhantering.
+- `cities.py` – Lista över städer och deras koordinater samt validering.
+- `weather_api.py` – API-anrop till Open-Meteo.
+- `weather_data.py` – Formatering av prognosdata, datum och väderikoner.
+- `templates/` – HTML-mallar för startsida, prognos och felsida.
+- `static/style.css` – Webbplatsens design och layout.
+- `tests/` – Automatiserade tester med Pytest.
+- `requirements.txt` – Applikationens beroenden.
+- `requirements-dev.txt` – Verktyg för tester och kodkontroll.
+- `pyproject.toml` – Projektets konfiguration för tester och kodverktyg.
 
 ## Datakälla
 
-Väderdata hämtas från [Open-Meteo](https://open-meteo.com/).
+Väderdata hämtas från [Open-Meteo](https://open-meteo.com/), som tillhandahåller väderprognoser via ett öppet API.
 
-Data: Open-Meteo, tillgänglig enligt CC BY 4.0. Se [Open-Meteos dokumentation](https://open-meteo.com/en/docs).
+Data från Open-Meteo används enligt CC BY 4.0.
+
+Dokumentation: [Open-Meteo Weather Forecast API](https://open-meteo.com/en/docs)
